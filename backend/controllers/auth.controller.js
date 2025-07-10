@@ -5,6 +5,11 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
+    // Check if email already exists
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      return next(createError(400, "Email is already registered!"));
+    }
     const hash = bcrypt.hashSync(req.body.password, 5);
     const newUser = new User({
       ...req.body,
